@@ -1,25 +1,48 @@
-# max2l_platform
-max2l Platform repository
-# Выполнено ДЗ №2
-## В процессе сделано:
- - В первом пункте создан серверный аккаунт **bob**. Этому аккаунту назначена роль **admin** в рамках всего кластера. Создан серверный аккаунт **dave** без доступа к кластеру.
- - Во втором пункте создан namespace **prometheus**. Создан сервисный аккаунт **carol** в этом namespace. Реализована возможность делать **get**, **list**, **watch** для всех **pods** кластера используя сервесные акканты в namespace **prometheus**.
- - В третьем пункте создан namespace **dev**. Создан сервисный аккаунт **jane** в этом namespace. Этому аккаунту выдана роль **admin** в рамках namespace **dev**. Создан сервисный аккаунт **ken** в namespace **dev**. Этому namespace выданы права в рамках роли **view** для этого namespace.
+# Выполнено ДЗ №3
 
-## Используемые комманды.
-Применение манифест файлов
+## В процессе сделано:
+
+- Добавлен в описание проверки доступности pods **readinessProbe** и **livenessProbe:**.
+- Создан **Deployment** для упрощения управления обновлением конфигураций подов. Стратегия обновления изменена на **RollingUpdate**.  
+- Создан сервис **ClusterIP**.
+- Для kube-proxy включен режим работы **IPVS**.
+- Произведена установка **MetalLB**.
+- Настройка балансировщика в режиме **L2**.
+- Произведена настройка доступа к **CoreDNS** снаружи кластера.
+- Установлен и настроен Ingress контроллер **ingress-nginx**
+- Произведено подключение подов web-* к Ingress контроллеру.
+- Произведено подключение **kubernetes-dashboard** к Ingress контроллеру.
+- Реализовано канареечное обновление и перенаправление части трафика на выбранную группу подов с использованием Ingress контроллера.
+
+## Используемые комманды
+
+Отладка процесса деплоя.
+
 ```bash
-kubectl apply -f task01
-kubectl apply -f task02
-kubectl apply -f task03
+kubespy trace deploy
 ```
-Получение **client-key-data** и **token**
+
+или
+
 ```bash
-kubectl get secrets service-admin-token-qdb8c
-kubectl get secrets service-admin-token-qdb8c -o "jsonpath={.data.token}"| base64 -D
+kubectl get events --watch
 ```
-Проверка прав доступа к ресурсам у пользователей
-```bash  
-kubectl auth can-i get deploument --as system:serviceaccount:dev:alice
-kubectl auth can-i get deploument --as system:serviceaccount:default:bob
+
+Установка  **Metallb**
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.8.0/manifests/metallb.yaml
+kubectl --namespace metallb-system get all
 ```
+
+Установка ingress
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/mandatory.yaml
+kubectl get pods --all-namespaces -l app.kubernetes.io/name=ingress-nginx --watch
+```
+
+## Ответ на вопросы
+
+1. Проверка на десятом слайде валидна, но не имеет смысла потому, что если основной процесс завершится, то docker контейнер завершит свою работу или перезапустится.
+2. Эта проверка имеет смысл если основной процесс web сервера порождает (например, с помощью системного вызова fork) дочерние процессы и они уже в свою очередь обрабатывают http запросы (Но тогда в этом случае имеет смысл проверять количество запущенных процессов). Или если процесс веб сервера порожден процессом другой демона, например с помощью **supervisord**.
