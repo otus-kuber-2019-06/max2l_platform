@@ -1,48 +1,29 @@
-# Выполнено ДЗ №3
+# Выполнено ДЗ №4
 
-## В процессе сделано:
+## В процессе сделано
 
-- Добавлен в описание проверки доступности pods **readinessProbe** и **livenessProbe:**.
-- Создан **Deployment** для упрощения управления обновлением конфигураций подов. Стратегия обновления изменена на **RollingUpdate**.  
-- Создан сервис **ClusterIP**.
-- Для kube-proxy включен режим работы **IPVS**.
-- Произведена установка **MetalLB**.
-- Настройка балансировщика в режиме **L2**.
-- Произведена настройка доступа к **CoreDNS** снаружи кластера.
-- Установлен и настроен Ingress контроллер **ingress-nginx**
-- Произведено подключение подов web-* к Ingress контроллеру.
-- Произведено подключение **kubernetes-dashboard** к Ingress контроллеру.
-- Реализовано канареечное обновление и перенаправление части трафика на выбранную группу подов с использованием Ingress контроллера.
+- Установлен **kind**.
+- Развернут **StatefulSet** с использованием **MinIO**.
+- Создан **Headless Service** для доступа к подам, которые **StatefulSet** изнутри кластера.
+- Установлен и настроен консольный клиент minio mc.
+- Произведена диагностика работы кластера в соответствии с требованиями домашнего задания.
+- Настроен **secret** для работы с конфигурацией **MinIO**.
 
-## Используемые комманды
+## Используемые команды
 
-Отладка процесса деплоя.
+Создание кластера kubernetes с помощью **kind**.
 
 ```bash
-kubespy trace deploy
+kind create cluster
+export KUBECONFIG="$(kind get kubeconfig-path --name="kind")"
 ```
 
-или
+ Команды для отладки.
 
 ```bash
-kubectl get events --watch
+kubectl get statefulsets
+kubectl get pods
+kubectl get pvc
+kubectl get pv
+kubectl describe <resource> <resource_name>
 ```
-
-Установка  **Metallb**
-
-```bash
-kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.8.0/manifests/metallb.yaml
-kubectl --namespace metallb-system get all
-```
-
-Установка ingress
-
-```bash
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/mandatory.yaml
-kubectl get pods --all-namespaces -l app.kubernetes.io/name=ingress-nginx --watch
-```
-
-## Ответ на вопросы
-
-1. Проверка на десятом слайде валидна, но не имеет смысла потому, что если основной процесс завершится, то docker контейнер завершит свою работу или перезапустится.
-2. Эта проверка имеет смысл если основной процесс web сервера порождает (например, с помощью системного вызова fork) дочерние процессы и они уже в свою очередь обрабатывают http запросы (Но тогда в этом случае имеет смысл проверять количество запущенных процессов). Или если процесс веб сервера порожден процессом другой демона, например с помощью **supervisord**.
