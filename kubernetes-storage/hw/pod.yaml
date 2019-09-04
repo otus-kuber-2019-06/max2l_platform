@@ -6,7 +6,7 @@ metadata:
 spec:
   containers:
     - name: nginx
-      image: max2l/nginx
+      image: max2l/nginx:1.0
       volumeMounts:
       - mountPath: /data
         name: data-volume
