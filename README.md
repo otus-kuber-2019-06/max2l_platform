@@ -1,29 +1,25 @@
-# Выполнено ДЗ №4
+# Выполнено ДЗ №5
 
 ## В процессе сделано
 
-- Установлен **kind**.
-- Развернут **StatefulSet** с использованием **MinIO**.
-- Создан **Headless Service** для доступа к подам, которые **StatefulSet** изнутри кластера.
-- Установлен и настроен консольный клиент minio mc.
-- Произведена диагностика работы кластера в соответствии с требованиями домашнего задания.
-- Настроен **secret** для работы с конфигурацией **MinIO**.
+- Подготовлен конфигурационный **cluster.yaml** файл для запуска kubernates с помощью **kind**.
+- Создан **StorageClass** для CSI Host Path Driver.
+- Создан объект PVC c именем **storage-pvc**.
+- Создан объект Pod c именем **storage-pod**.
+- Хранилище смонтировано в директорию **/data**.
+- В смонтированную директорию загруженны тестовые данные.
+- Протестирован механизм работы snapshot реализованный в CSI драйвере Host Path.
+- Произведены изменения в проекте и docker images необходимые для прохождения тестов в **travis-ci.com**.
 
 ## Используемые команды
 
-Создание кластера kubernetes с помощью **kind**.
+Запуск кластера с использованием пользовательской конфигурации.
 
 ```bash
-kind create cluster
-export KUBECONFIG="$(kind get kubeconfig-path --name="kind")"
+kind create cluster --config=kubernetes-storage/cluster/cluster.yaml
 ```
 
- Команды для отладки.
-
+Применения манифестов.
 ```bash
-kubectl get statefulsets
-kubectl get pods
-kubectl get pvc
-kubectl get pv
-kubectl describe <resource> <resource_name>
+kubectl apply -f kubernetes-storage/hw
 ```
