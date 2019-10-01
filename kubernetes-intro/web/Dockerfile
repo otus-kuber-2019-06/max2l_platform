@@ -1,5 +1,5 @@
 FROM alpine:3.9
-RUN apk --no-cache add nginx shadow && \
+RUN apk --no-cache add nginx shadow bash && \
     usermod -u 1001 nginx && \
     groupmod -g 1001 nginx
 RUN ln -sf /dev/stdout /var/log/nginx/access.log \

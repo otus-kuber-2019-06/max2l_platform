@@ -1,0 +1,16 @@
+---
+kind: Pod
+apiVersion: v1
+metadata:
+  name: storage-pod
+spec:
+  containers:
+    - name: nginx
+      image: max2l/nginx:1.0
+      volumeMounts:
+      - mountPath: /data
+        name: data-volume
+  volumes:
+  - name: data-volume
+    persistentVolumeClaim:
+      claimName: storage-pvc

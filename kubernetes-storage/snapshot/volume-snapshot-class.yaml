@@ -1,0 +1,5 @@
+apiVersion: snapshot.storage.k8s.class.io/v1alpha
+kind: VolumeSnapshotClass
+metadata:
+  name: storage-pvc-snapshot
+snapshotter: hostpath.csi.k8s.io
