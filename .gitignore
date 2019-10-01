@@ -1,1 +1,8 @@
 minio-secret.yaml
+account.json
+.terraform
+.history
+.git/
+.vscode/
+terraform.tfstate
+*.backup
